@@ -3,7 +3,7 @@
  * @since 2015-12-05
  *
  * Platform independent library for tracking via google analytics HTTP interface
- * Requires jQuery for ajax only.
+
  * Usage:
  *
  * ga.init({
@@ -16,7 +16,7 @@
  * ga.trackEvent('Event category', 'Event action');
  */
 
-ga = (function () {
+ga = (function (window) {
 
     var
         m_version,
@@ -34,14 +34,18 @@ ga = (function () {
 
         sessionStarted = false,
         initialized = false,
+
+        xhttp = null,
+
         exports = {};
+
 
     function logError(e) {
         console.error('[ga]: ' + e);
     }
 
     function getRandomDeviceId() {
-        return 'rnd.' + Date.now();
+        return 'rnd.' + (Date.now()  + Math.floor(Math.random(1000, 9000)));
     }
 
     function getDeviceLanguage() {
@@ -122,21 +126,46 @@ ga = (function () {
 
         return params;
     }
-    
+
+    function getXHR() {
+
+        var xhr = null;
+
+        if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+            xhr = new XMLHttpRequest();
+        } else if (window.ActiveXObject) { // IE
+            try {
+                xhr = new ActiveXObject('Msxml2.XMLHTTP');
+            } catch (e) {
+                try {
+                  xhr = new ActiveXObject('Microsoft.XMLHTTP');
+                } catch (e) {}
+            }
+        }
+
+        return xhr;
+    }
+
+    function buildQueryString(params) {
+
+       var str = [];
+
+       for(var p in params){
+           if (params.hasOwnProperty(p)) {
+               str.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
+           }
+       }
+
+       return '?' + str.join('&');
+    }
+
     function send(params) {
-        $.ajax({
-            type: 'GET',
-            url: m_googleURL,
-            data: params
-        });
+        xhttp = getXHR();
+        xhttp.open('GET', m_googleURL + buildQueryString(params), true);
+        xhttp.send(null);
     }
 
     exports.init = function (opt) {
-
-        if (is.undefined(window.jQuery)) {
-            logError('ga.js requires jQuery loaded');
-            return;
-        }
 
         if (opt.trackingId && opt.appName && opt.appVersion) {
             m_profileId = opt.trackingId;
@@ -183,6 +212,7 @@ ga = (function () {
         params['cd'] = viewId;
 
         send(params);
+
         return exports;
     };
 
@@ -211,16 +241,18 @@ ga = (function () {
         params['ev'] = (is.number(value)) ? value : 0;
 
         send(params);
+
         return exports;
     };
 
-    exports.setCustomMetric = function (metricId, value){       
+    exports.setCustomMetric = function (metricId, value) {
         m_customMetrics[metricId] = value;
     };
     
-    exports.setCustomDimension = function (dimensionId, value){    
+    exports.setCustomDimension = function (dimensionId, value) {
         m_customDimensions[dimensionId] = value;
     };
 
     return exports;
-}());
+
+}(this));
