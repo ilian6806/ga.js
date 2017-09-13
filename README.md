@@ -1,5 +1,7 @@
 # ga.js
-Platform independent library for tracking via google analytics HTTP interface
+Platform independent js SDK for tracking via google analytics HTTP interface
+
+![](https://img.shields.io/gemnasium/mathiasbynens/he.svg) ![](https://img.shields.io/npm/l/express.svg)
 
 Usage:
 
