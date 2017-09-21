@@ -104,7 +104,7 @@ ga = (function (window) {
             'ul': m_userLanguage
         };
 
-        // start session if trackSession was not called until now 
+        // start session if trackSession was not called until now
         if (!sessionStarted) {
             sessionStarted = true;
             params['sc'] = 'start';
@@ -117,7 +117,7 @@ ga = (function (window) {
         }
         m_customMetrics = {};
 
-        for (var key in m_customDimensions) {
+        for (key in m_customDimensions) {
             if (m_customDimensions.hasOwnProperty(key)) {
                 params['cd' + key.ToString()] = m_customDimensions[key];
             }
@@ -138,8 +138,10 @@ ga = (function (window) {
                 xhr = new ActiveXObject('Msxml2.XMLHTTP');
             } catch (e) {
                 try {
-                  xhr = new ActiveXObject('Microsoft.XMLHTTP');
-                } catch (e) {}
+                    xhr = new ActiveXObject('Microsoft.XMLHTTP');
+                } catch (err) {
+                    logError('Failed to initialize xhr object');
+                }
             }
         }
 
@@ -248,7 +250,7 @@ ga = (function (window) {
     exports.setCustomMetric = function (metricId, value) {
         m_customMetrics[metricId] = value;
     };
-    
+
     exports.setCustomDimension = function (dimensionId, value) {
         m_customDimensions[dimensionId] = value;
     };
