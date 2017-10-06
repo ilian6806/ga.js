@@ -202,6 +202,7 @@ ga = (function (window) {
         return exports;
     };
 
+    // for mobile
     exports.trackView = function (viewId) {
 
         if (is.not.string(viewId)) {
@@ -214,7 +215,26 @@ ga = (function (window) {
         params['cd'] = viewId;
 
         send(params);
+        return exports;
+    };
 
+    // for web
+    exports.trackPage = function (page, title) {
+
+        if (is.not.string(page)) {
+            logError('trackPage method expects first parameter to be string.');
+            return exports;
+        }
+
+        var params = new GaParams();
+        params['t'] = 'pageview';
+        params['dp'] = page;
+
+        if (is.string(title)) {
+            params['dt'] = title;
+        }
+
+        send(params);
         return exports;
     };
 
