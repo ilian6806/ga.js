@@ -26,6 +26,7 @@ ga = (function (window) {
         m_screenResolution,
         m_viewportSize,
         m_userLanguage,
+        m_anonymizeIp,
 
         m_customMetrics = {},
         m_customDimensions = {},
@@ -124,6 +125,10 @@ ga = (function (window) {
         }
         m_customDimensions = {};
 
+        if (m_anonymizeIp) {
+            params['aip'] = 1;
+        }
+
         return params;
     }
 
@@ -185,6 +190,10 @@ ga = (function (window) {
             m_screenResolution = m_viewportSize = opt.width + 'x' + opt.height;
         } else {
             m_screenResolution = m_viewportSize = getDeviceResolution();
+        }
+
+        if (opt.anonymizeIp) {
+            m_anonymizeIp = true;
         }
 
         initialized = true;
